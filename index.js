@@ -373,13 +373,16 @@ module.exports.create = function (configs) {
             log(args.debug, "regrs.length", regrs.length);
 
             regrs.some(function (regr) {
-              return regr.body.contact.some(function (contact) {
-                var match = contact.toLowerCase() === 'mailto:' + email.toLowerCase();
-                if (match) {
-                  accountId = regr.__accountId;
-                  return true;
-                }
-              });
+              // Ensure regr has the body and contact properties before accessing them
+              if (regr.body && Array.isArray(regr.body.contact)) {
+                return regr.body.contact.some(function (contact) {
+                  var match = contact.toLowerCase() === 'mailto:' + email.toLowerCase();
+                  if (match) {
+                    accountId = regr.__accountId;
+                    return true;
+                  }
+                });
+              }
             });
 
             if (!accountId) {
